@@ -1,6 +1,6 @@
 include("../aimajulia.jl");
 
-using Base.Test;
+using Test;
 
 using aimajulia;
 
