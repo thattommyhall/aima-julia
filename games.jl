@@ -455,14 +455,14 @@ Search the given game to find the best action using alpha-beta pruning. However,
 cutoff test to cut off the search early and apply a heuristic evaluation function to turn nonterminal
 states into terminal states.
 """
-function alphabeta_search(state::String, game::T; d::Int64=4, cutoff_test_fn::Union{Void, Function}=nothing, evaluation_fn::Union{Void, Function}=nothing) where {T <: AbstractGame}
+function alphabeta_search(state::String, game::T; d::Int64=4, cutoff_test_fn::Union{Nothing, Function}=nothing, evaluation_fn::Union{Nothing, Function}=nothing) where {T <: AbstractGame}
     local player::String = to_move(game, state);
-    if (typeof(cutoff_test_fn) <: Void)
+    if (typeof(cutoff_test_fn) <: Nothing)
         cutoff_test_fn = (function(state::String, depth::Int64; dvar::Int64=d, relevant_game::AbstractGame=game)
                             return ((depth > dvar) || terminal_test(relevant_game, state));
                         end);
     end
-    if (typeof(evaluation_fn) <: Void)
+    if (typeof(evaluation_fn) <: Nothing)
         evaluation_fn = (function(state::String, ; relevant_game::AbstractGame=game, relevant_player::String=player)
                             return utility(relevant_game, state, relevant_player);
                         end);
@@ -473,14 +473,14 @@ function alphabeta_search(state::String, game::T; d::Int64=4, cutoff_test_fn::Un
                     end));
 end
 
-function alphabeta_search(state::TicTacToeState, game::T; d::Int64=4, cutoff_test_fn::Union{Void, Function}=nothing, evaluation_fn::Union{Void, Function}=nothing) where {T <: AbstractGame}
+function alphabeta_search(state::TicTacToeState, game::T; d::Int64=4, cutoff_test_fn::Union{Nothing, Function}=nothing, evaluation_fn::Union{Nothing, Function}=nothing) where {T <: AbstractGame}
     local player::String = to_move(game, state);
-    if (typeof(cutoff_test_fn) <: Void)
+    if (typeof(cutoff_test_fn) <: Nothing)
         cutoff_test_fn = (function(state::TicTacToeState, depth::Int64; dvar::Int64=d, relevant_game::AbstractGame=game)
                             return ((depth > dvar) || terminal_test(relevant_game, state));
                         end);
     end
-    if (typeof(evaluation_fn) <: Void)
+    if (typeof(evaluation_fn) <: Nothing)
         evaluation_fn = (function(state::TicTacToeState, ; relevant_game::AbstractGame=game, relevant_player::String=player)
                             return utility(relevant_game, state, relevant_player);
                         end);
