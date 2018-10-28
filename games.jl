@@ -345,19 +345,19 @@ function minimax_decision(state::String, game::T) where {T <: AbstractGame}
                     end));
 end
 
-	if (terminal_test(game, state))
-		return utility(game, state, player)
-	end
-	local v::Float64 = -Inf64;
-	for action in actions(game, state)
-		v = max(v, alphabeta_full_search_min_value(game, player, result(game, state, action), alpha, beta));
 function alphabeta_full_search_max_value(game::T, player::String, state::String, alpha::Number, beta::Number) where {T <: AbstractGame}
+    if (terminal_test(game, state))
+        return utility(game, state, player)
+    end
+    local v::Float64 = -Inf64;
+    for action in actions(game, state)
+        v = max(v, alphabeta_full_search_min_value(game, player, result(game, state, action), alpha, beta));
         if (v >= beta)
             return v;
         end
         alpha = max(alpha, v);
-	end
-	return v;
+    end
+    return v;
 end
 
 function alphabeta_full_search_min_value(game::T, player::String, state::String, alpha::Number, beta::Number) where {T <: AbstractGame}
@@ -380,9 +380,9 @@ end
 
 Search the given game to find the best action using alpha-beta pruning (Fig 5.7).
 """
-	local player::String = to_move(game, state);
-    return argmax(actions(game, state), 
 function alphabeta_full_search(state::String, game::T) where {T <: AbstractGame}
+    local player::String = to_move(game, state);
+    return argmax(actions(game, state),
                     (function(action::String,; relevant_game::AbstractGame=game, relevant_state::String=state, relevant_player::String=player)
                         return alphabeta_full_search_min_value(relevant_game, relevant_player, result(relevant_game, relevant_state, action), -Inf64, Inf64);
                     end));
