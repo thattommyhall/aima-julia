@@ -339,7 +339,7 @@ Calculate the best move by searching through moves, all the way to the leaves (t
 """
 function minimax_decision(state::String, game::T) where {T <: AbstractGame}
     local player = to_move(game, state);
-    return argmax(actions(game, state),
+    return utils.argmax(actions(game, state),
                     (function(action::String,; relevant_game::AbstractGame=game, relevant_player::String=player, relevant_state::String=state)
                         return minimax_min_value(relevant_game, relevant_player, result(relevant_game, relevant_state, action));
                     end));
@@ -382,7 +382,7 @@ Search the given game to find the best action using alpha-beta pruning (Fig 5.7)
 """
 function alphabeta_full_search(state::String, game::T) where {T <: AbstractGame}
     local player::String = to_move(game, state);
-    return argmax(actions(game, state),
+    return utils.argmax(actions(game, state),
                     (function(action::String,; relevant_game::AbstractGame=game, relevant_state::String=state, relevant_player::String=player)
                         return alphabeta_full_search_min_value(relevant_game, relevant_player, result(relevant_game, relevant_state, action), -Inf64, Inf64);
                     end));
@@ -467,7 +467,7 @@ function alphabeta_search(state::String, game::T; d::Int64=4, cutoff_test_fn::Un
                             return utility(relevant_game, state, relevant_player);
                         end);
     end
-    return argmax(actions(game, state),
+    return utils.argmax(actions(game, state),
                     (function(action::String,; relevant_game::AbstractGame=game, relevant_state::String=state, relevant_player::String=player, cutoff_test::Function=cutoff_test_fn, eval_fn::Function=evaluation_fn)
                         return alphabeta_search_min_value(relevant_game, relevant_player, cutoff_test, eval_fn, result(relevant_game, relevant_state, action), -Inf64, Inf64, 0);
                     end));
@@ -485,7 +485,7 @@ function alphabeta_search(state::TicTacToeState, game::T; d::Int64=4, cutoff_tes
                             return utility(relevant_game, state, relevant_player);
                         end);
     end
-    return argmax(actions(game, state),
+    return utils.argmax(actions(game, state),
                     (function(action::Tuple{Signed, Signed},; relevant_game::AbstractGame=game, relevant_state::TicTacToeState=state, relevant_player::String=player, cutoff_test::Function=cutoff_test_fn, eval_fn::Function=evaluation_fn)
                         return alphabeta_search_min_value(relevant_game, relevant_player, cutoff_test, eval_fn, result(relevant_game, relevant_state, action), -Inf64, Inf64, 0);
                     end));
