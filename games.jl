@@ -1,4 +1,3 @@
-
 import Base.display;
 
 export AbstractGame, Figure52Game, TicTacToeGame, ConnectFourGame,
