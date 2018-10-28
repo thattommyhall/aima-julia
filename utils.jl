@@ -50,7 +50,7 @@ function null_index(v::AbstractVector)
     return -1;          #couldn't find the item in the array
 end
 
-function index{T <: Any}(v::Array{T, 1}, item::T)
+function index(v::Array{T, 1}, item::T) where {T <: Any}
     local i::Int64 = 0;
     for element in v
         i = i + 1;
@@ -234,7 +234,7 @@ end
 
 Push item(s) of s2 to the end of s1.
 """
-function extend!{T <: Queue}(s1::Stack, s2::T)
+function extend!(s1::Stack, s2::T) where {T <: Queue}
     if (!(typeof(s2) <: PQueue))
         for e in s2.array
             push!(s1, e);
@@ -260,7 +260,7 @@ end
 
 Push item(s) of fq2 to the end of fq1.
 """
-function extend!{T <: Queue}(fq1::FIFOQueue, fq2::T)
+function extend!(fq1::FIFOQueue, fq2::T) where {T <: Queue}
     if (!(typeof(fq2) <: PQueue))
         for e in fq2.array
             push!(fq1, e);
@@ -289,7 +289,7 @@ end
 #
 # Base.Order.Forward will make the PQueue ordered by minimums.
 # Base.Order.Reverse will make the PQueue ordered by maximums.
-function bisearchfirst{T <: Tuple{Any, Any}}(v::Array{T, 1}, x::T, lo::Int, hi::Int, o::Base.Sort.Ordering)
+function bisearchfirst(v::Array{T, 1}, x::T, lo::Int, hi::Int, o::Base.Sort.Ordering) where {T <: Tuple{Any, Any}}
     lo = lo-1;
     hi = hi+1;
     @inbounds while (lo < hi-1)
@@ -303,7 +303,7 @@ function bisearchfirst{T <: Tuple{Any, Any}}(v::Array{T, 1}, x::T, lo::Int, hi::
     return hi;
 end
 
-function bisearchlast{T <: Tuple{Any, Any}}(v::Array{T, 1}, x::T, lo::Int, hi::Int, o::Base.Sort.Ordering)
+function bisearchlast(v::Array{T, 1}, x::T, lo::Int, hi::Int, o::Base.Sort.Ordering) where {T <: Tuple{Any, Any}}
     lo = lo-1;
     hi = hi+1;
     @inbounds while (lo < hi-1)
@@ -317,7 +317,7 @@ function bisearchlast{T <: Tuple{Any, Any}}(v::Array{T, 1}, x::T, lo::Int, hi::I
     return lo;
 end
 
-function bisearch{T <: Tuple{Any, Any}}(v::Array{T, 1}, x::T, ilo::Int, ihi::Int, o::Base.Sort.Ordering)
+function bisearch(v::Array{T, 1}, x::T, ilo::Int, ihi::Int, o::Base.Sort.Ordering) where {T <: Tuple{Any, Any}}
     lo = ilo-1;
     hi = ihi+1;
     @inbounds while (lo < hi-1)
@@ -375,7 +375,7 @@ function push!(pq::PQueue, item::Any, mf::Function)
     nothing;
 end
 
-function push!{T <: AbstractProblem}(pq::PQueue, item::Any, mf::MemoizedFunction, problem::T)
+function push!(pq::PQueue, item::Any, mf::MemoizedFunction, problem::T) where {T <: AbstractProblem}
     local item_tuple = (eval_memoized_function(mf, problem, item), item);
     bsi = bisearch(pq.array, item_tuple, 1, length(pq), pq.order);
 
@@ -406,7 +406,7 @@ end
 
 Push item(s) of pq2 to pq1 by the priority of the item(s) returned by pv().
 """
-function extend!{T <: Queue}(pq1::PQueue, pq2::T, pv::Function)
+function extend!(pq1::PQueue, pq2::T, pv::Function) where {T <: Queue}
     if (!(typeof(pq2) <: PQueue))
         for e in pq2.array
             push!(pq1, (pv(e), e));
@@ -435,7 +435,7 @@ function extend!(pq1::PQueue, pq2::AbstractVector, mpv::MemoizedFunction)
     nothing;
 end
 
-function extend!{T <: AbstractProblem}(pq1::PQueue, pq2::AbstractVector, mpv::MemoizedFunction, problem::T)
+function extend!(pq1::PQueue, pq2::AbstractVector, mpv::MemoizedFunction, problem::T) where {T <: AbstractProblem}
     for e in pq2
         push!(pq1, (eval_memoized_function(mpv, problem, e), e));
     end
@@ -471,12 +471,12 @@ end
 Return an array of 'n' elements that are chosen from 'seq' at random with replacement, with
 the probability of picking each element based on its corresponding weight in 'weights'.
 """
-function weighted_sample_with_replacement{T1 <: AbstractVector, T2 <: AbstractVector}(seq::T1, weights::T2, n::Int64)
+function weighted_sample_with_replacement(seq::T1, weights::T2, n::Int64) where {T1 <: AbstractVector, T2 <: AbstractVector}
     local sample = weighted_sampler(seq, weights);
     return collect(sample() for i in 1:n);
 end
 
-function weighted_sample_with_replacement{T <: AbstractVector}(seq::String, weights::T, n::Int64)
+function weighted_sample_with_replacement(seq::String, weights::T, n::Int64) where {T <: AbstractVector}
     local sample = weighted_sampler(seq, weights);
     return collect(sample() for i in 1:n);
 end
@@ -487,7 +487,7 @@ end
 Return a random sample function that chooses an element from 'seq' based on its corresponding
 weight in 'weight'.
 """
-function weighted_sampler{T1 <: AbstractVector, T2 <: AbstractVector}(seq::T1, weights::T2)
+function weighted_sampler(seq::T1, weights::T2) where {T1 <: AbstractVector, T2 <: AbstractVector}
     local totals::Array{Float64, 1} = Array{Float64, 1}();
     for w in weights
         if (length(totals) != 0)
@@ -507,7 +507,7 @@ function weighted_sampler{T1 <: AbstractVector, T2 <: AbstractVector}(seq::T1, w
             end);
 end
 
-function weighted_sampler{T <: AbstractVector}(seq::String, weights::T)
+function weighted_sampler(seq::String, weights::T) where {T <: AbstractVector}
     local totals = Array{Any, 1}();
     for w in weights
         if (length(totals) != 0)
@@ -536,7 +536,7 @@ end
 Applies fn() to each element in seq and returns the element that has the lowest fn() value. argmin()
 is similar to mapreduce(fn, min, seq) in computing the best score, but returns the corresponding element.
 """
-function argmin{T <: AbstractVector}(seq::T, fn::Function)
+function argmin(seq::T, fn::Function) where {T <: AbstractVector}
     local best_element = seq[1];
     local best_score = fn(best_element);
     for element in seq
@@ -549,7 +549,7 @@ function argmin{T <: AbstractVector}(seq::T, fn::Function)
     return best_element;
 end
 
-function argmin_random_tie{T <: AbstractVector}(seq::T, fn::Function)
+function argmin_random_tie(seq::T, fn::Function) where {T <: AbstractVector}
     local best_score = fn(seq[1]);
     local n::Int64 = 0;
     local best_element = seq[1];
@@ -574,7 +574,7 @@ end
 Applies fn() to each element in seq and returns the element that has the highest fn() value. argmax()
 is similar to mapreduce(fn, max, seq) in computing the best score, but returns the corresponding element.
 """
-function argmax{T <: AbstractVector}(seq::T, fn::Function)
+function argmax(seq::T, fn::Function) where {T <: AbstractVector}
     local best_element = seq[1];
     local best_score = fn(best_element);
     for element in seq
@@ -587,7 +587,7 @@ function argmax{T <: AbstractVector}(seq::T, fn::Function)
     return best_element;
 end
 
-function argmax_random_tie{T <: AbstractVector}(seq::T, fn::Function)
+function argmax_random_tie(seq::T, fn::Function) where {T <: AbstractVector}
     local best_score = fn(seq[1]);
     local n::Int64 = 1;
     local best_element = seq[1];
