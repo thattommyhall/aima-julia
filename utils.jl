@@ -73,7 +73,7 @@ end
 
 abstract type AbstractProblem end;
 
-RandomDeviceInstance = RandomDevice();
+RandomDeviceInstance = Random.RandomDevice();
 
 #=
 
