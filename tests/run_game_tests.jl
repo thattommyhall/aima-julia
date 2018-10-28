@@ -2,7 +2,7 @@ include("../aimajulia.jl");
 
 using Test;
 
-using aimajulia;
+using .aimajulia;
 
 #The following game tests are from the aima-python doctest
 
