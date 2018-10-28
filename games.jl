@@ -24,22 +24,22 @@ struct Game <: AbstractGame
     end
 end
 
-function actions{T <: AbstractGame}(game::T, state::String)
+function actions(game::T, state::String) where {T <: AbstractGame}
     println("actions() is not implemented yet for ", typeof(game), "!");
     nothing;
 end
 
-function result{T <: AbstractGame}(game::T, state::String, move::String)
+function result(game::T, state::String, move::String) where {T <: AbstractGame}
     println("result() is not implemented yet for ", typeof(game), "!");
     nothing;
 end
 
-function utility{T <: AbstractGame}(game::T, state::String, player::String)
+function utility(game::T, state::String, player::String) where {T <: AbstractGame}
     println("utility() is not implemented yet for ", typeof(game), "!");
     nothing;
 end
 
-function terminal_test{T <: AbstractGame}(game::T, state::String)
+function terminal_test(game::T, state::String) where {T <: AbstractGame}
     if (length(actions(game, state)) == 0)
         return true;
     else
@@ -47,12 +47,12 @@ function terminal_test{T <: AbstractGame}(game::T, state::String)
     end
 end
 
-function to_move{T <: AbstractGame}(game::T, state::String)
+function to_move(game::T, state::String) where {T <: AbstractGame}
     println("to_move() is not implemented yet for ", typeof(game), "!");
     nothing;
 end
 
-function display{T <: AbstractGame}(game::T, state::String)
+function display(game::T, state::String) where {T <: AbstractGame}
     println(state);
 end
 
@@ -183,7 +183,7 @@ function display(game::TicTacToeGame, state::TicTacToeState)
     end
 end
 
-function compute_utility{T <: Dict}(game::TicTacToeGame, board::T, move::Tuple{Signed, Signed}, player::String)
+function compute_utility(game::TicTacToeGame, board::T, move::Tuple{Signed, Signed}, player::String) where {T <: Dict}
     if (k_in_row(game, board, move, player, (0, 1)) ||
         k_in_row(game, board, move, player, (1, 0)) ||
         k_in_row(game, board, move, player, (1, -1)) ||
@@ -279,7 +279,7 @@ function display(game::ConnectFourGame, state::ConnectFourState)
     end
 end
 
-function compute_utility{T <: Dict}(game::ConnectFourGame, board::T, move::Tuple{Signed, Signed}, player::String)
+function compute_utility(game::ConnectFourGame, board::T, move::Tuple{Signed, Signed}, player::String) where {T <: Dict}
     if (k_in_row(game, board, move, player, (0, 1)) ||
         k_in_row(game, board, move, player, (1, 0)) ||
         k_in_row(game, board, move, player, (1, -1)) ||
@@ -312,7 +312,7 @@ function k_in_row(game::ConnectFourGame, board::Dict, move::Tuple{Signed, Signed
     return n >= game.k;
 end
 
-function minimax_max_value{T <: AbstractGame}(game::T, player::String, state::String)
+function minimax_max_value(game::T, player::String, state::String) where {T <: AbstractGame}
     if (terminal_test(game, state))
         return utility(game, state, player)
     end
@@ -322,7 +322,7 @@ function minimax_max_value{T <: AbstractGame}(game::T, player::String, state::St
     return v;
 end
 
-function minimax_min_value{T <: AbstractGame}(game::T, player::String, state::String)
+function minimax_min_value(game::T, player::String, state::String) where {T <: AbstractGame}
     if (terminal_test(game, state))
         return utility(game, state, player);
     end
@@ -337,7 +337,7 @@ end
 
 Calculate the best move by searching through moves, all the way to the leaves (terminal states) (Fig 5.3).
 """
-function minimax_decision{T <: AbstractGame}(state::String, game::T)
+function minimax_decision(state::String, game::T) where {T <: AbstractGame}
     local player = to_move(game, state);
     return argmax(actions(game, state),
                     (function(action::String,; relevant_game::AbstractGame=game, relevant_player::String=player, relevant_state::String=state)
@@ -345,13 +345,13 @@ function minimax_decision{T <: AbstractGame}(state::String, game::T)
                     end));
 end
 
-function alphabeta_full_search_max_value{T <: AbstractGame}(game::T, player::String, state::String, alpha::Number, beta::Number)
 	if (terminal_test(game, state))
 		return utility(game, state, player)
 	end
 	local v::Float64 = -Inf64;
 	for action in actions(game, state)
 		v = max(v, alphabeta_full_search_min_value(game, player, result(game, state, action), alpha, beta));
+function alphabeta_full_search_max_value(game::T, player::String, state::String, alpha::Number, beta::Number) where {T <: AbstractGame}
         if (v >= beta)
             return v;
         end
@@ -360,7 +360,7 @@ function alphabeta_full_search_max_value{T <: AbstractGame}(game::T, player::Str
 	return v;
 end
 
-function alphabeta_full_search_min_value{T <: AbstractGame}(game::T, player::String, state::String, alpha::Number, beta::Number)
+function alphabeta_full_search_min_value(game::T, player::String, state::String, alpha::Number, beta::Number) where {T <: AbstractGame}
     if (terminal_test(game, state))
         return utility(game, state, player);
     end
@@ -380,15 +380,15 @@ end
 
 Search the given game to find the best action using alpha-beta pruning (Fig 5.7).
 """
-function alphabeta_full_search{T <: AbstractGame}(state::String, game::T)
 	local player::String = to_move(game, state);
     return argmax(actions(game, state), 
+function alphabeta_full_search(state::String, game::T) where {T <: AbstractGame}
                     (function(action::String,; relevant_game::AbstractGame=game, relevant_state::String=state, relevant_player::String=player)
                         return alphabeta_full_search_min_value(relevant_game, relevant_player, result(relevant_game, relevant_state, action), -Inf64, Inf64);
                     end));
 end
 
-function alphabeta_search_max_value{T <: AbstractGame}(game::T, player::String, cutoff_test_fn::Function, evaluation_fn::Function, state::String, alpha::Number, beta::Number, depth::Int64)
+function alphabeta_search_max_value(game::T, player::String, cutoff_test_fn::Function, evaluation_fn::Function, state::String, alpha::Number, beta::Number, depth::Int64) where {T <: AbstractGame}
     if (cutoff_test_fn(state, depth))
         return evaluation_fn(state);
     end
@@ -403,7 +403,7 @@ function alphabeta_search_max_value{T <: AbstractGame}(game::T, player::String, 
     return v;
 end
 
-function alphabeta_search_max_value{T <: AbstractGame}(game::T, player::String, cutoff_test_fn::Function, evaluation_fn::Function, state::TicTacToeState, alpha::Number, beta::Number, depth::Int64)
+function alphabeta_search_max_value(game::T, player::String, cutoff_test_fn::Function, evaluation_fn::Function, state::TicTacToeState, alpha::Number, beta::Number, depth::Int64) where {T <: AbstractGame}
     if (cutoff_test_fn(state, depth))
         return evaluation_fn(state);
     end
@@ -418,7 +418,7 @@ function alphabeta_search_max_value{T <: AbstractGame}(game::T, player::String, 
     return v;
 end
 
-function alphabeta_search_min_value{T <: AbstractGame}(game::T, player::String, cutoff_test_fn::Function, evaluation_fn::Function, state::String, alpha::Number, beta::Number, depth::Int64)
+function alphabeta_search_min_value(game::T, player::String, cutoff_test_fn::Function, evaluation_fn::Function, state::String, alpha::Number, beta::Number, depth::Int64) where {T <: AbstractGame}
     if (cutoff_test_fn(state, depth))
         return evaluation_fn(state);
     end
@@ -433,7 +433,7 @@ function alphabeta_search_min_value{T <: AbstractGame}(game::T, player::String, 
     return v;
 end
 
-function alphabeta_search_min_value{T <: AbstractGame}(game::T, player::String, cutoff_test_fn::Function, evaluation_fn::Function, state::TicTacToeState, alpha::Number, beta::Number, depth::Int64)
+function alphabeta_search_min_value(game::T, player::String, cutoff_test_fn::Function, evaluation_fn::Function, state::TicTacToeState, alpha::Number, beta::Number, depth::Int64) where {T <: AbstractGame}
     if (cutoff_test_fn(state, depth))
         return evaluation_fn(state);
     end
@@ -455,7 +455,7 @@ Search the given game to find the best action using alpha-beta pruning. However,
 cutoff test to cut off the search early and apply a heuristic evaluation function to turn nonterminal
 states into terminal states.
 """
-function alphabeta_search{T <: AbstractGame}(state::String, game::T; d::Int64=4, cutoff_test_fn::Union{Void, Function}=nothing, evaluation_fn::Union{Void, Function}=nothing)
+function alphabeta_search(state::String, game::T; d::Int64=4, cutoff_test_fn::Union{Void, Function}=nothing, evaluation_fn::Union{Void, Function}=nothing) where {T <: AbstractGame}
     local player::String = to_move(game, state);
     if (typeof(cutoff_test_fn) <: Void)
         cutoff_test_fn = (function(state::String, depth::Int64; dvar::Int64=d, relevant_game::AbstractGame=game)
@@ -473,7 +473,7 @@ function alphabeta_search{T <: AbstractGame}(state::String, game::T; d::Int64=4,
                     end));
 end
 
-function alphabeta_search{T <: AbstractGame}(state::TicTacToeState, game::T; d::Int64=4, cutoff_test_fn::Union{Void, Function}=nothing, evaluation_fn::Union{Void, Function}=nothing)
+function alphabeta_search(state::TicTacToeState, game::T; d::Int64=4, cutoff_test_fn::Union{Void, Function}=nothing, evaluation_fn::Union{Void, Function}=nothing) where {T <: AbstractGame}
     local player::String = to_move(game, state);
     if (typeof(cutoff_test_fn) <: Void)
         cutoff_test_fn = (function(state::TicTacToeState, depth::Int64; dvar::Int64=d, relevant_game::AbstractGame=game)
@@ -491,23 +491,23 @@ function alphabeta_search{T <: AbstractGame}(state::TicTacToeState, game::T; d::
                     end));
 end
 
-function random_player{T <: AbstractGame}(game::T, state::String)
+function random_player(game::T, state::String) where {T <: AbstractGame}
     return rand(RandomDeviceInstance, actions(game, state));
 end
 
-function random_player{T <: AbstractGame}(game::T, state::TicTacToeState)
+function random_player(game::T, state::TicTacToeState) where {T <: AbstractGame}
     return rand(RandomDeviceInstance, actions(game, state));
 end
 
-function alphabeta_player{T <: AbstractGame}(game::T, state::String)
+function alphabeta_player(game::T, state::String) where {T <: AbstractGame}
     return alphabeta_search(state, game);
 end
 
-function alphabeta_player{T <: AbstractGame}(game::T, state::TicTacToeState)
+function alphabeta_player(game::T, state::TicTacToeState) where {T <: AbstractGame}
     return alphabeta_search(state, game);
 end
 
-function play_game{T <: AbstractGame}(game::T, players::Vararg{Function})
+function play_game(game::T, players::Vararg{Function}) where {T <: AbstractGame}
     state = game.initial;
     while (true)
         for player in players
@@ -519,4 +519,3 @@ function play_game{T <: AbstractGame}(game::T, players::Vararg{Function})
         end
     end
 end
-
